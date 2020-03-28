@@ -36,25 +36,58 @@ class TicketToRide:
         self.routes = RoutesDeck()
         self.state = [self.deck.draw() for _ in range(5)]
 
+    def send_to_all(self, message, context):
+        for user in self.session['users']:
+            context.bot.send_message(chat_id=user, text=message)
+
     def start(self, update, context):
         if not self.session['open'] or update.message.chat_id not in self.session['users']:
             update.message.reply_text('Sorry, you have to /join the open session first')
             return
-        update.message.reply_text('Hi! This Ticket To Ride game is being initialized...')
+        self.send_to_all('Hi! This Ticket To Ride game is being initialized...', context)
         logger.info('Started new game')
         self.init_game()
-        self.show_state(update, context)
+        self.send_to_all(self.get_state_string(), context)
         self.session['open'] = False
 
-    def show_state(self, update, context):
-        update.message.reply_text('''
-            /random
-            /1 {}
-            /2 {}
-            /3 {}
-            /4 {}
-            /5 {}
-            '''.format(*self.state))
+    def get_state_string(self):
+        return '''
+            /random \n /1 {} \n /2 {} \n /3 {} \n /4 {} \n /5 {}
+        '''.format(*self.state)
+
+    def card_random(self, update, context):
+        train = self.deck.draw()
+        for user in self.session['users']:
+            if user == update.message.chat_id:
+                update.message.reply_text('You drew {}'.format(train))
+            else:
+                context.bot.send_message(chat_id=user, text='Random card was drawn')   
+        self.send_to_all(self.get_state_string(), context)
+
+    def card_1(self, update, context):
+        update.message.reply_text('You drew {}'.format(self.state[0]))
+        self.state[0] = self.deck.draw()
+        self.send_to_all(self.get_state_string(), context)
+
+    def card_2(self, update, context):
+        update.message.reply_text('You drew {}'.format(self.state[1]))
+        self.state[1] = self.deck.draw()
+        self.send_to_all(self.get_state_string(), context)
+
+    def card_3(self, update, context):
+        update.message.reply_text('You drew {}'.format(self.state[2]))
+        self.state[2] = self.deck.draw()
+        self.send_to_all(self.get_state_string(), context)
+
+    def card_4(self, update, context):
+        update.message.reply_text('You drew {}'.format(self.state[3]))
+        self.state[3] = self.deck.draw()
+        self.send_to_all(self.get_state_string(), context)
+
+    def card_5(self, update, context):
+        update.message.reply_text('You drew {}'.format(self.state[4]))
+        self.state[4] = self.deck.draw()
+        self.send_to_all(self.get_state_string(), context)
 
     def error(self, update, context):
         """Log Errors caused by Updates."""
@@ -65,12 +98,12 @@ class TicketToRide:
         dispatcher = self.updater.dispatcher
         dispatcher.add_handler(CommandHandler("join", self.join))
         dispatcher.add_handler(CommandHandler("start", self.start))
-        # dispatcher.add_handler(CommandHandler("random", self.random))
-        # dispatcher.add_handler(CommandHandler("1", self.start))
-        # dispatcher.add_handler(CommandHandler("2", self.start))
-        # dispatcher.add_handler(CommandHandler("3", self.start))
-        # dispatcher.add_handler(CommandHandler("4", self.start))
-        # dispatcher.add_handler(CommandHandler("5", self.start))
+        dispatcher.add_handler(CommandHandler("random", self.card_random))
+        dispatcher.add_handler(CommandHandler("1", self.card_1))
+        dispatcher.add_handler(CommandHandler("2", self.card_2))
+        dispatcher.add_handler(CommandHandler("3", self.card_3))
+        dispatcher.add_handler(CommandHandler("4", self.card_4))
+        dispatcher.add_handler(CommandHandler("5", self.card_5))
         # dispatcher.add_handler(CommandHandler("routes", self.start))
 
         dispatcher.add_error_handler(self.error)
@@ -85,3 +118,4 @@ if __name__ == '__main__':
         token = token_file.read()
     app = TicketToRide(token)
     app.main()
+ 

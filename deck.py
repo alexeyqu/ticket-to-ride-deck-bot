@@ -30,6 +30,6 @@ class Deck:
         random.seed(42)
 
     def draw(self):
-        train = number_to_train_dict[random.randint(1, 10)]
+        train = number_to_train_dict[random.randint(1, 9)]
         logger.info('drew {}'.format(train))
         return train
