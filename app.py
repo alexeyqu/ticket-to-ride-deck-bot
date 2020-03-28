@@ -18,6 +18,21 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def train_to_color(train):
+    colors = {
+        'purple': '🟪',
+        'white': '  ',
+        'blue': '🟦',
+        'yellow': '🟨',
+        'orange': '🟧',
+        'black': '⬛',
+        'red': '🟥',
+        'green': '🟩',
+        'rainbow': '🏳️‍🌈'
+    }
+    return colors[train]
+
+
 class TicketToRide:
     def __init__(self, token):
         self.updater = Updater(token, use_context=True)
@@ -53,7 +68,7 @@ class TicketToRide:
     def get_state_string(self):
         return '''
             /random \n /1 {} \n /2 {} \n /3 {} \n /4 {} \n /5 {}
-        '''.format(*self.state)
+        '''.format(*map(train_to_color, self.state))
 
     def card_random(self, update, context):
         train = self.deck.draw()
