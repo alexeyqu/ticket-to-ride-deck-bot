@@ -18,19 +18,21 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+COLORS = {
+    'purple': '🟪',
+    'white': '  ',
+    'blue': '🟦',
+    'yellow': '🟨',
+    'orange': '🟧',
+    'black': '⬛',
+    'red': '🟥',
+    'green': '🟩',
+    'rainbow': '🏳️‍🌈'
+}
+
+
 def train_to_color(train):
-    colors = {
-        'purple': '🟪',
-        'white': '  ',
-        'blue': '🟦',
-        'yellow': '🟨',
-        'orange': '🟧',
-        'black': '⬛',
-        'red': '🟥',
-        'green': '🟩',
-        'rainbow': '🏳️‍🌈'
-    }
-    return colors[train]
+    return COLORS[train]
 
 
 class TicketToRide:
@@ -108,6 +110,10 @@ class TicketToRide:
         """Log Errors caused by Updates."""
         logger.warning('Update "%s" caused error "%s"', update, context.error)
 
+    def palette(self, update, context):
+        update.message.reply_text('\n'.join(['{} {}'.format(color, symbol) for color, symbol in COLORS.items()]))
+
+
     def main(self):
         """Start the bot."""
         dispatcher = self.updater.dispatcher
@@ -119,6 +125,7 @@ class TicketToRide:
         dispatcher.add_handler(CommandHandler("3", self.card_3))
         dispatcher.add_handler(CommandHandler("4", self.card_4))
         dispatcher.add_handler(CommandHandler("5", self.card_5))
+        dispatcher.add_handler(CommandHandler("palette", self.palette))
         # dispatcher.add_handler(CommandHandler("routes", self.start))
 
         dispatcher.add_error_handler(self.error)
