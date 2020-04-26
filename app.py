@@ -18,19 +18,19 @@ COLORS_text = ['purple', 'white', 'blue', 'yellow', 'orange', 'black', 'red', 'g
 COLORS_icon = ['🟪', '  ', '🟦', '🟨', '🟧', '⬛', '🟥', '🟩',  '🏳️‍🌈']
 COLORS_text_to_icon = {text : icon for text, icon in zip(COLORS_text, COLORS_icon)}
 
-#DECK_initial_configuration = {color : 1 for color in COLORS_text}
-DECK_initial_configuration = dict([(color, 12 if color is not 'rainbow' else 14) for color in COLORS_text])
-
 class Deck:
+    #DECK_initial_configuration = {color : 1 for color in COLORS_text}
+    DECK_initial_configuration = dict([(color, 12 if color is not 'rainbow' else 14) for color in COLORS_text])
+
     def __init__(self):
         random.seed(42)
-        self.configuration = DECK_initial_configuration.copy()
+        self.configuration = self.DECK_initial_configuration.copy()
 
     def draw(self):
         allowed_colors = [color for color in COLORS_text if self.configuration[color] > 0]
 
         if not allowed_colors:
-            self.configuration = DECK_initial_configuration.copy()
+            self.configuration = self.DECK_initial_configuration.copy()
             allowed_colors = COLORS_text
             logger.info('Deck has been restarted.')
 
